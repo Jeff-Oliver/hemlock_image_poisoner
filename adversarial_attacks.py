@@ -37,6 +37,7 @@ def convert_image_to_Tensor(image):
     # if len(image.shape) == 3:
     #     image = np.expand_dims(image, axis=0)
 
+
     return image
 
 ################################################################################
@@ -401,7 +402,7 @@ def visualize_adversarial_examples(original_image, adversarial_image, labels, mo
 
 
     # Get the predicted labels for both images
-    #riginal_prediction = model.predict(np.expand_dims(original_image, axis=0))
+    #original_prediction = model.predict(np.expand_dims(original_image, axis=0))
     original_prediction = model.predict(original_image)
     #adversarial_prediction = model.predict(np.expand_dims(adversarial_image, axis=0))
     adversarial_prediction = model.predict(adversarial_image)
