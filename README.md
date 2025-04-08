@@ -11,26 +11,103 @@
 ## Overview
 In this project, our team developed Hemlock: A Poison Image Creator and Detector. Hemlock is an advanced system designed to apply and identify adversarial perturbations using the Fast Gradient Sign Method (FGSM). We implemented an intuitive user interface that enables users to automatically generate poisoned images, thereby embedding protective signals into their visual content. In the current digital age, social media users face increasing threats of content theft and unauthorized use of their media in machine learning models. This tool offers an additional security layer by enabling content creators—particularly influencers and digital artists—to embed adversarial noise as a form of copyright protection. Our model serves as a proactive defense against content scraping, bot-generated impersonation, and deepfake misuse, while also supporting digital content ownership and traceability across platforms.
 
-## Features
-
-## Machine Learning
-
 ## MobileNetV2 Model 
+MobileNetV2 is an existing deep learning CNN model for image classification. 
+
+## Advesirial Attack Methods
+
+1. Fast Gradient Sign Method: Perturbs input data by moving it slightly in the direction of the gradient sign to maximize model error.
+
+2. Projected Gradient Descent Method: Applies small FGSM steps repeatedly and projects the adversarial example back into a valid range after each step.
+
+3. Carl & Wagner Approach: Minimizes perturbations while still causing misclassification, often seen as one of the most effective attacks against deep networks.
 
 ## Installation
+### **1. Clone the Repository**
+```bash
+git clone (https://github.com/Jeff-Oliver/hemlock_image_poisoner.git
+
+cd hemlock_image_poisoner
+```
+
+### **2. Install Dependencies**
+```bash
+pip install numpy pandas matplotlib seaborn scipy scikit-learn statsmodels streamlit joblib
+```
+
+### **3. Run the Streamlit App**
+```bash
+streamlit run interface.py
+```
+
+### **4. Verify Installation**
+Run the following command to check if Streamlit is installed correctly:
+```bash
+streamlit --version
+```
+If everything is set up correctly, you should see the installed version of Gradio.
+
+
+**Packages:**
+
+#!pip install rembg
+
+#!pip install onnxruntime
+
+#!pip install tensorflow-hub
 
 ## Program Usage Guide
+1. **Run `main.ipynb` first** to ensure all necessary data is processed correctly before using the recommendation system.
+2. **Launch the Streamlit Web App**.
+3. **Use the sidebar sliders** to set song characteristics (e.g., danceability, energy, tempo) depending on your preference.
+4. Click **"Find My Song"** to get songs recommendation.
+5. The system will return **up to 10 similar songs** based on the selected algorithm.
 
 ## Example Output
+Below is an example of the expected Streamlit UI when a user searches for songs:
+
+**Screeshot**
 
 ## File Structure
+```
+               Hemlock_Image_Poisoner
+│── data                  # CSV dataset of the songs used in the ML model 
 
-## Project Demonstration
+│── output                # Contains pre-trained ML models & processed datasets
 
-## Powerpoint Presentation
+│── interface.py          # Streamlit UI & Recommendation Logic
+
+│── main.ipynb            # Jupyter Notebook for data exploration & modeling (MUST be run first)
+
+│── README.md             # Project Documentation (This File)
+
+│── utils.py              # Utility functions for EDA & preprocessing
+
+│── Project2 v3 Demo.mp4  # Video demonstration of the project
+
+│── Presentation.pdf      # Powerpoint presentation ()pdf format for project showcase
+```
 
 ## Troubleshooting
 
+*Gradio App Won't Start**
+
+- Solution: Ensure the Streamlit dependency has been correctly installed and verify its installation. Try running:
+
+```bash
+pip install streamlit
+```
+```bash
+streamlit --version
+```
+
+**Missing File Errors**
+
+- Solution: Make sure you have run `main.ipynb` before launching `interface.py`. This generates all the necessary datasets required to run the program.
+
+## Powerpoint Presentation
+ **Powerpoint Presentation**: Available on [Google Slides](https://docs.google.com/presentation/d/1bXuiae8r6g7LAxt3JwkmMEAAOndjQzjU-EggEg0uJOE/edit?usp=sharing")
+ 
 ## Acknowledgments
 This project utilizes the following Model & Datasets
 1. **MobileNetV2 Model**: Available on [Keras]( https://keras.io/api/applications/mobilenet/#mobilenetv2-function), "This model returns a Keras image classification model, optionally loaded with weights pre-trained on ImageNet"
