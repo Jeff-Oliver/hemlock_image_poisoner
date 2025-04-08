@@ -25,9 +25,9 @@ MobileNetV2 is an existing deep learning CNN model for image classification.
 ## Installation
 ### **1. Clone the Repository**
 ```bash
-git clone https://github.com/Jeff-Oliver/BCS_Project_2.git
+git clone (https://github.com/Jeff-Oliver/hemlock_image_poisoner.git
 
-cd BCS_Project_2
+cd hemlock_image_poisoner
 ```
 
 ### **2. Install Dependencies**
