@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-DEBUG = True  # Set to True for debugging output
+DEBUG = False  # Set to True for debugging output
 
 ################################################################################
 def convert_image_to_tensor(image):
@@ -235,7 +235,7 @@ def PGD(image, label, model, loss_func, eps=0.3, max_iterations=40, alpha=0.01, 
          
     # Display the perturbation image
     plt.imshow(signed_gradients[0] * 0.5 + 0.5);  # To change [-1, 1] to [0,1]
-    plt.title('PGD Iteration Perturbation')
+    plt.title('PGD Perturbation')
     plt.axis('off')
     plt.show()
 
@@ -673,8 +673,8 @@ def debug_label_output(label):
         if len(label) == 3:
             print("Label ID:", label[0]) # Print the label ID
             print("Label name:", label[1]) # Print the label name
-            print("Label probability:", label[2]) # Print the label probability
+            print("Label confidence:", label[2]) # Print the label probability
         else:
-            print("Label probability:", label[0]) # Print the label probability
+            print("Label confidence:", label[0]) # Print the label probability
     else:
         print("Label ID:", label[0])
