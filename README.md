@@ -20,7 +20,7 @@ MobileNetV2 is an existing deep learning CNN model for image classification.
 
 2. Projected Gradient Descent Method: Applies small FGSM steps repeatedly and projects the adversarial example back into a valid range after each step.
 
-3. Carl & Wagner Approach: Minimizes perturbations while still causing misclassification, often seen as one of the most effective attacks against deep networks.
+3. Carlini & Wagner Approach: Minimizes perturbations while still causing misclassification, often seen as one of the most effective attacks against deep networks.
 
 ## Installation
 ### **1. Clone the Repository**
@@ -90,7 +90,7 @@ Below is an example of the expected Streamlit UI when a user searches for songs:
 
 ## Troubleshooting
 
-*Gradio App Won't Start**
+Gradio App Won't Start
 
 - Solution: Ensure the Streamlit dependency has been correctly installed and verify its installation. Try running:
 
