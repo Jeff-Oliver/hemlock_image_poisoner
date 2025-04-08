@@ -5,140 +5,154 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
+DEBUG = True  # Set to True for debugging output
+
 ################################################################################
-def convert_image_to_Tensor(image):
+def convert_image_to_tensor(image):
     """
-    Convert an image to a NumPy array if it is not already in that format.
-    This function is useful for ensuring that the image data is in a format
-    that can be processed by various machine learning frameworks.
+    Convert an image to a TensorFlow tensor if it is not already in that format. Ensure
+    the image is in the correct shape for processing. If the image is a batch of images,
+    it will be reshaped to remove the batch dimension. If the image is a single image,
+    it will be reshaped to add a batch dimension. The function also ensures that the
+    image is of type float32 for compatibility with TensorFlow operations.
 
     Args:
         image (numpy.ndarray, TensorFlow tensor, or tuple): The input image to be converted.
     
     Returns:
-        numpy.ndarray: The converted image as a NumPy array.
+        tensor: The converted image as a tensor.
     """
-    
-    # Check if the image is already a NumPy array
-    # if isinstance(image, np.ndarray):
-    #     return image
-    # # If the image is a TensorFlow tensor, convert it to a NumPy array
-    # elif isinstance(image, tf.Tensor):
-    #     image = image.numpy()
-    # # If the image is a tuple, convert it to a NumPy array
-    # elif isinstance(image, tuple):
-    #     image = np.array(image)
+
+    if DEBUG == True:
+        print("Before conversion - Image Type:", type(image))
+        print("Before conversion - Image Shape:", image.shape)
 
     # Ensure image is a TensorFlow tensor with dtype float32
     if not isinstance(image, tf.Tensor):
         image = tf.convert_to_tensor(image, dtype=tf.float32)
 
-    # If model expects a batch dimension, reshape the image
-    # if len(image.shape) == 3:
-    #     image = np.expand_dims(image, axis=0)
+    # Ensure the input image has the correct shape
+    if len(image.shape) == 5:  # Check if the shape is (1, 1, 224, 224, 3)
+        image = tf.squeeze(image, axis=0)  # Remove the first dimension
+        print("Corrected CW image shape:", image.shape)  # Should be (1, 224, 224, 3)
+    elif len(image.shape) == 3:  # Check if the shape is (224, 224, 3)
+        image = tf.expand_dims(image, axis=0)  # Add a batch dimension
+        print("Corrected CW image shape:", image.shape)  # Should be (1, 224, 224, 3)
 
+    if DEBUG == True:
+        print("After conversion - Image Type:", type(image))
+        print("After conversion - Image Shape:", image.shape)
 
     return image
 
 ################################################################################
-def convert_label_to_Tensor(label):
+def convert_label_to_tensor(label):
     """
-    Convert a label to a NumPy array if it is not already in that format.
-    This function is useful for ensuring that the label data is in a format
-    that can be processed by various machine learning frameworks.
+    Convert a label to a TensorFlow tensor if it is not already in that format.
     
     Args:
         label (numpy.ndarray, TensorFlow tensor, or tuple): The input label to be converted.
     
     Returns:
-        numpy.ndarray: The converted label as a NumPy array.
+        tensor: The converted label as a tensor.
     """
 
-    # Check if the label is already a NumPy array
-    # if isinstance(label, np.ndarray):
-    #     return label
-    # # If the label is a TensorFlow tensor, convert it to a NumPy array
-    # elif isinstance(label, tf.Tensor):
-    #     label = label.numpy()
-    # # If the label is a tuple, convert it to a NumPy array
-    # elif isinstance(label, tuple):
-    #     label = np.array(label)
-
-    # # If the label is a string, convert it to an integer
-    # if not isinstance(label[0], str):
-    #     label[0] = str(label[0])
-    
-    # if not isinstance(label[1], str):
-    #     label[1] = str(label[1])
-
-    # if not isinstance(label[2], float):
-    #     label[2] = float(label[2])
+    if DEBUG == True:
+        print("Before conversion - Label Type:", type(label))
+        print("Before conversion - Label Shape:", label.shape if hasattr(label, 'shape') else "No shape attribute")
 
     # Ensure label is a TensorFlow tensor with dtype float32
     if not isinstance(label, tf.Tensor):
         label = tf.convert_to_tensor(label, dtype=tf.float32)
 
-    # Ensure label is a TensorFlow tensor with dtype int64
-    # if not isinstance(label, tf.Tensor):
-    #     label = tf.convert_to_tensor(label, dtype=tf.int64)
+    if DEBUG == True:
+        print("After conversion - Label Type:", type(label))
+        print("After conversion - Label Shape:", label.shape if hasattr(label, 'shape') else "No shape attribute")
 
-    # If model expects a batch dimension, reshape the image
-    # if len(label.shape) == 3:
-    #     label = np.expand_dims(label, axis=0)
+    return label
+
+################################################################################
+def convert_label_to_scalar_int(label):
+    """
+    Convert a label to a scalar integer if it is not already in that format.
+    
+    Args:
+        label (numpy.ndarray, TensorFlow tensor, or tuple): The input label to be converted.
+    
+    Returns:
+        tensor: The converted label as a scalar integer.
+    """
+
+    if DEBUG == True:
+        print("Before conversion - Label Type:", type(label))
+        print("Before conversion - Label Shape:", label.shape if hasattr(label, 'shape') else "No shape attribute")
+
+    # Ensure label is a TensorFlow tensor with dtype float32
+    if not isinstance(label, tf.Tensor):
+        label = tf.convert_to_tensor(label, dtype=tf.float32)
+
+    # Convert label from shape (1, 1000) to a scalar integer
+    if len(label.shape) == 2 and label.shape[0] == 1:
+        label = tf.argmax(label, axis=1)  # Get the class index with the highest probability
+        if DEBUG == True:
+            print("Label value after argmax:", label.numpy())  # Print the class index
+
+    label = tf.squeeze(label)  # Remove any remaining dimensions of size 1
+    label = tf.cast(label, tf.int32)  # Ensure label is a scalar integer
+
+    if DEBUG == True:
+        print("After conversion - Label Type:", type(label))
+        print("After conversion - Label Shape:", label.shape if hasattr(label, 'shape') else "No shape attribute")
 
     return label
 
 ################################################################################
 def FGSM(image, label, model, loss_func, eps):
     """
-    Generate adversarial image using the Fast Gradient Sign Method (FGSM).
-    This method perturbs the input image in the direction of the gradient of the loss
-    with respect to the input image, scaled by a small factor (eps).
-    The perturbation is added to the original image to create an adversarial example.
-    The adversarial image is then clipped to ensure pixel values remain in the valid range [0, 1].
-    This function is designed to work with TensorFlow and Keras models.
+    Fast Gradient Sign Method (FGSM) adversarial attack.
+    This method generates adversarial examples by adding a small perturbation to
+    the input image in the direction of the gradient of the loss with respect to
+    the input image. The perturbation is scaled by a small factor (eps) to ensure
+    the modified image remains within a certain distance from the original image.
 
     Args:
-        image (numpy.ndarray): The input image.
-        label (numpy.ndarray): The true label of the image.
+        image (numpy.ndarray, TensorFlow tensor, or tuple): The input image.
+        label (numpy.ndarray, TensorFlow tensor, or tuple): The label of the input image.
         model (tf.keras.Model): The model used for generating adversarial examples.
+        loss_func (tf.keras.losses): The loss function used to compute the gradients.
         eps (float): The maximum perturbation allowed.
 
     Returns:
-        numpy.ndarray: The adversarial image.
+        Adversarial image (NumPy array).
+        numpy.ndarray: The signed gradients used to create the perturbation.
     """
 
-    image = convert_image_to_Tensor(image)
+    # Debugging: print the types and shape of the image and label
+    if DEBUG == True:
+        print("=======================================")
+        print("=== FGSM image and label conversion ===")
+        print("=======================================")        
 
-    # if "SparseCategoricalCrossentropy" in loss:
-    #     label = (label[-1],)
-
-    label = convert_label_to_Tensor(label)
-    
-    debug_output(image, label)
+    image = convert_image_to_tensor(image)  # Convert image to tensor and ensure correct shape
+    label = convert_label_to_tensor(label)  # Convert label to tensor and ensure correct shape
 
     # Calculate the gradient of the loss with respect to the input image
     with tf.GradientTape() as tape:
-        tape.watch(image)
-        prediction = model(image)
-
-        print("Label shape:", label.shape)
-        print("Prediction shape:", prediction.shape)
-        
-        # # Ensure label is 1D
-        # if len(label.shape) > 1:
-        #     label = tf.squeeze(label)
-        #if "SparseCategoricalCrossentropy" in loss:
-        loss = loss_func(label, prediction)
-        # elif "CategoricalCrossentropy" in loss:
-        #     loss = loss(label, prediction)
-
+        tape.watch(image) # Watch the input image for gradient calculation
+        prediction = model(image) # Get the model's predictions
+        loss = loss_func(label, prediction) # Calculate the loss using the specified loss function
 
     # Get the gradients of the loss with respect to the input image
     gradients = tape.gradient(loss, image)
 
-    # Get the sign of the gradients
+    # Get the sign of the gradients to create the perturbation
     signed_gradients = tf.sign(gradients)
+
+    # Display the perturbation image
+    plt.imshow(signed_gradients[0] * 0.5 + 0.5);  # To change [-1, 1] to [0,1]
+    plt.title('FGSM Perturbation')
+    plt.axis('off')
+    plt.show()
 
     # Create the adversarial image by adjusting the original image with the signed gradients
     adversarial_image = image + eps * signed_gradients
@@ -146,119 +160,185 @@ def FGSM(image, label, model, loss_func, eps):
     # Clip the pixel values to be in the valid range [0, 1]
     adversarial_image = tf.clip_by_value(adversarial_image, 0, 1)
 
-    print("Image shape:", image.shape)
-    print("FGSM image shape:", adversarial_image.numpy().shape)
-    print("Label shape:", label.shape)
+    # Debugging: print the shapes of the images and labels
+    if DEBUG == True:
+        print("FGSM Image shape:", image.shape)
+        print("FGSM Prediction shape:", prediction.shape)
+        print("FGSM Perturbation shape:", signed_gradients.shape)
+        print("FGSM Adversarial image shape:", adversarial_image.numpy().shape)
+        print("FGSM Label shape:", label.shape if hasattr(label, 'shape') else "No shape attribute")
 
-    return adversarial_image.numpy()
+
+    return adversarial_image.numpy(), signed_gradients.numpy()
 
 ################################################################################
-def PGD(image, label, model, eps=0.1, num_iterations=40):
+def PGD(image, label, model, loss_func, eps=0.3, max_iterations=40, alpha=0.01, targeted=False):
     """
-    Generate adversarial image using the Projected Gradient Descent (PGD) method.
+    Projected Gradient Descent (PGD) adversarial attack.
     This method iteratively perturbs the input image in the direction of the gradient of the loss
     with respect to the input image, scaled by a small factor (eps).
     The perturbation is added to the original image to create an adversarial example.
     The adversarial image is then clipped to ensure pixel values remain in the valid range [0, 1].
-    This function is designed to work with TensorFlow and Keras models.
     The PGD method is an iterative version of the FGSM attack, which allows for more control
     over the perturbation and can lead to stronger adversarial examples.
 
     Args:
-        image (numpy.ndarray): The input image.
-        label (numpy.ndarray): The true label of the image.
+        image (numpy.ndarray, TensorFlow tensor, or tuple): The input image.
+        label (numpy.ndarray, TensorFlow tensor, or tuple): The label of the input image.
         model (tf.keras.Model): The model used for generating adversarial examples.
+        loss_func (tf.keras.losses): The loss function used to compute the gradients.
         eps (float): The maximum perturbation allowed.
-        num_iterations (int): The number of iterations for the attack.
+        max_iterations (int): The number of iterations for the attack.
+        alpha (float): The step size for for gradient ascent/descent.
+        targeted (boolean): Whether to perform a targeted attack.
 
     Returns:
-        numpy.ndarray: The adversarial image.
+        Adversarial image (NumPy array).
     """
-    
-    # Ensure the image is a tensor
-    image = convert_image_to_Tensor(image)
 
-    # Ensure the label is a tensor
-    label = convert_label_to_Tensor(label)
+    # Debugging: print the types and shape of the image and label
+    if DEBUG == True:
+        print("======================================")
+        print("=== PGD image and label conversion ===")
+        print("======================================")        
+
+    image = convert_image_to_tensor(image)  # Convert image to tensor and ensure correct shape
+    label = convert_label_to_tensor(label)  # Convert label to tensor and ensure correct shape
 
     # Create a copy of the original image to modify
     adversarial_image = tf.identity(image)
+    #adversarial_image = tf.Variable(tf.zeros_like(image), dtype=tf.float32)
 
     # Perform the attack for the specified number of iterations
-    for _ in range(num_iterations):
+    for _ in range(int(max_iterations)):
         with tf.GradientTape() as tape:
-            tape.watch(adversarial_image)
-            prediction = model(adversarial_image)
-            loss = tf.keras.losses.sparse_categorical_crossentropy(label, prediction)
+            tape.watch(adversarial_image) # Watch the adversarial image for gradient calculation
+            predictions = model(adversarial_image) # Get the model's predictions
+            loss = loss_func(label, predictions) # Calculate the loss using the specified loss function
 
         # Get the gradients of the loss with respect to the adversarial image
         gradients = tape.gradient(loss, adversarial_image)
-
+        
         # Get the sign of the gradients
         signed_gradients = tf.sign(gradients)
-
-        # Update the adversarial image
-        adversarial_image = adversarial_image + eps * signed_gradients
+        
+        if targeted:
+            # If the attack is targeted, subtract the normalized gradients
+            adversarial_image = adversarial_image - alpha * signed_gradients
+        else:
+            # If the attack is untargeted, add the normalized gradients
+            adversarial_image = adversarial_image + alpha * signed_gradients
 
         # Clip the pixel values to be in the valid range [0, 1]
-        adversarial_image = tf.clip_by_value(adversarial_image, 0, 1)
+        perturbation = tf.clip_by_value(adversarial_image - image, -eps, eps)
+        adversarial_image = tf.clip_by_value(image + perturbation, 0, 1)
+         
+    # Display the perturbation image
+    plt.imshow(signed_gradients[0] * 0.5 + 0.5);  # To change [-1, 1] to [0,1]
+    plt.title('PGD Iteration Perturbation')
+    plt.axis('off')
+    plt.show()
+
+    # Debugging: print the shapes of the images and labels
+    if DEBUG == True:
+        print("PGD Image shape:", image.shape)
+        print("PGD Prediction shape:", predictions.shape)
+        print("PGD Perturbation shape:", signed_gradients.shape)
+        print("PGD Adversarial image shape:", adversarial_image.numpy().shape)
+        print("PGD Label shape:", label.shape if hasattr(label, 'shape') else "No shape attribute")
 
     return adversarial_image.numpy()
 
 ################################################################################
-def CW(image, label, model, confidence=0, max_iter=1000, learning_rate=0.01, c=1e-4):
+def CW(image, label, model, targeted=False, c=1, kappa=0, max_iterations=1000, learning_rate=0.01):
     """
-    Generate adversarial image using the Carlini & Wagner (CW)
-    attack method. This method is a more sophisticated attack that optimizes
-    the perturbation to minimize the difference between the original and
-    adversarial images while ensuring the adversarial image is misclassified.
-    The CW attack is known for its effectiveness against various models and
-    is often used as a benchmark for adversarial robustness.
-
+    Carlini-Wagner (CW) adversarial attack.
+    This method generates adversarial examples using the CW attack.
+    
     Args:
         image (numpy.ndarray): The input image.
-        label (numpy.ndarray): The true label of the image.
+        label (numpy.ndarray): The labels of the input image.
         model (tf.keras.Model): The model used for generating adversarial examples.
-        confidence (float): Confidence margin for misclassification.
-        max_iter (int): Maximum number of iterations for optimization.
+        targeted: (boolean): Whether to perform a targeted attack.
+        c (float): Weight for the L2 regularization term.
+        kappa (float): Confidence parameter.
+        max_iterations (int): Maximum number of iterations for optimization.
         learning_rate (float): Learning rate for optimization.
-        c (float): Regularization parameter for the loss function.
-
+              
     Returns:
-        numpy.ndarray: The adversarial image.
+        Adversarial image (NumPy array).
     """
 
-    # Ensure the image is a tensor
-    if not isinstance(image, tf.Tensor):
-        image = tf.convert_to_tensor(image, dtype=tf.float32)
+    # define the loss function for the CW attack
+    def loss_fn(x_adv):
+        outputs = model(x_adv) # Get the model's predictions
+        real = tf.reduce_sum(outputs * label, axis=1) # Isolate the logit for the true label
 
-    # Initialize variables
-    adversarial_image = tf.Variable(image)
-    optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+        # Get the logit for the other classes to identify the most confident misclassification
+        other = tf.reduce_max((1 - label) * outputs - (label * 10000), axis=1)
 
-    # Define the loss function
-    def loss_fn():
-        logits = model(adversarial_image[None, ...])
-        real = logits[0, label]
-        other = tf.reduce_max(tf.concat([logits[0, :label], logits[0, label + 1:]], axis=0))
-        # Misclassification loss
-        misclassification_loss = tf.maximum(0.0, other - real + confidence)
-        # Regularization loss
-        perturbation_loss = tf.reduce_sum(tf.square(adversarial_image - image))
-        return c * misclassification_loss + perturbation_loss
+        # Return the loss based on whether the attack is targeted or not
+        if targeted:
+            return tf.maximum(other - real, -kappa)
+        else:
+            return tf.maximum(real - other, -kappa)
 
-    # Perform optimization
-    for _ in range(max_iter):
-        optimizer.minimize(loss_fn, var_list=[adversarial_image])
-        # Clip the adversarial image to ensure pixel values are in the valid range [0, 1]
-        adversarial_image.assign(tf.clip_by_value(adversarial_image, 0, 1))
+    # Debugging: print the types and shape of the image and label
+    if DEBUG == True:
+        print("=======================================")
+        print("=== CW image and label conversion ===")
+        print("=======================================")        
+    
+    image = convert_image_to_tensor(image)  # Convert image to tensor and ensure correct shape
+    label = convert_label_to_tensor(label)  # Convert label to tensor and ensure correct shape
+    
+    # Initialize the adversarial image as a trainable variable
+    w = tf.Variable(tf.zeros_like(image), dtype=tf.float32)
 
-    return adversarial_image.numpy()
+    # Define the optimizer
+    w_opt = tf.keras.optimizers.Adam(learning_rate)
+
+    best_l2 = float('inf') # Initialize best L2 distance with infinity
+    best_adv = image # Initialize best adversarial image with the original image
+
+    # Perform the optimization process
+    for iteration in range(max_iterations):
+        with tf.GradientTape() as tape:
+            adv_images = tf.tanh(w) * 0.5 + 0.5 # Transform w to the range [0, 1]
+
+           # Compute the Perturbation loss which is the L2 distance between the adversarial image and the original image
+            l2_dist = tf.reduce_sum(tf.square(adv_images - image), axis=[1, 2, 3])
+
+            # Calculate the misclassification loss
+            loss1 = c * loss_fn(adv_images)
+
+            # Assign the L2 distance (Perturbation loss) to the loss2 variable
+            loss2 = l2_dist
+
+            # Compute the total loss
+            loss = tf.reduce_sum(loss1 + loss2)
+
+        gradients = tape.gradient(loss, w) # Get the gradients of the loss with respect to w
+        w_opt.apply_gradients([(gradients, w)]) # Apply the gradients to update w
+
+        # Print the loss every 10% of the iterations
+        if iteration % (max_iterations // 10) == 0:
+            print(f"Iteration: {iteration}, Loss: {loss.numpy()}")
+
+        # Update the adversarial image and best L2 distance if the loss is less than or equal to 0
+        # and the L2 distance is less than the best L2 distance
+        if tf.reduce_max(loss_fn(adv_images)) <= 0 and tf.reduce_mean(l2_dist) < best_l2:
+            best_l2 = tf.reduce_mean(l2_dist)
+            best_adv = adv_images
+
+    return best_adv.numpy()
 
 ################################################################################
-def JSMA(image, label, model, eps=0.1, max_iter=100):
+# Future Work: Implement the JSMA attack
+################################################################################
+def JSMA(image, label, model, theta=1, max_iterations=50):
     """
-    Generate adversarial image using the Jacobian-based Saliency Map Attack (JSMA).
+    Jacobian-based Saliency Map Attack (JSMA) adversarial attack.
     This method uses the saliency map of the input image to identify the most
     important pixels to modify in order to mislead the model. The attack is
     performed by iteratively modifying the pixels with the highest saliency
@@ -267,58 +347,85 @@ def JSMA(image, label, model, eps=0.1, max_iter=100):
     imperceptible adversarial examples.
     
     Args:
-        image (numpy.ndarray): The input image.
-        label (numpy.ndarray): The true label of the image.
+        image (numpy.ndarray, TensorFlow tensor, or tuple): The input image.
+        label (numpy.ndarray, TensorFlow tensor, or tuple): The label of the input image.
         model (tf.keras.Model): The model used for generating adversarial examples.
-        eps (float): The maximum perturbation allowed.
-        max_iter (int): The maximum number of pixel modifications.
+        theta (float): The maximum perturbation allowed.
+        max_iterations (int): The maximum number of iterations.
     
     Returns:
-        numpy.ndarray: The adversarial image.
+        Adversarial image (NumPy array).
     """
 
-    # Ensure the image is a tensor
-    if not isinstance(image, tf.Tensor):
-        image = tf.convert_to_tensor(image, dtype=tf.float32)
+    # Debugging: print the types and shape of the image and label
+    if DEBUG == True:
+        print("=======================================")
+        print("=== JSMA image and label conversion ===")
+        print("=======================================")        
+    
+    image_tf = convert_image_to_tensor(image)  # Convert image to tensor and ensure correct shape
+    label_tf = tf.convert_to_tensor([label], dtype=tf.int32) # Convert label to tensor
+    #label_tf = convert_label_to_scalar_int(label) # Convert label to scalar integer
 
-    # Initialize the adversarial image
-    adversarial_image = tf.identity(image)
-
-    for _ in range(max_iter):
+    def saliency_map(image_var, label_var):
         with tf.GradientTape() as tape:
-            tape.watch(adversarial_image)
-            logits = model(adversarial_image[None, ...])
-        
-        # Compute the Jacobian (gradients of logits w.r.t. the input image)
-        gradients = tape.gradient(logits, adversarial_image)
+            tape.watch(image_var)
+            outputs = model(image_var)
+            target_output = outputs[0, label_var[0]]
 
-        # Compute the saliency map for the target label
-        target_grad = gradients[0, label]
-        other_grad = tf.reduce_sum(gradients[0, :label], axis=0) + tf.reduce_sum(gradients[0, label + 1:], axis=0)
-        saliency_map = tf.abs(target_grad) - tf.abs(other_grad)
+        gradients = tape.gradient(target_output, image_var)[0]
+        gradients_flat = tf.reshape(gradients, [-1])
+        saliency = tf.abs(gradients_flat)
+        return saliency.numpy()
 
-        # Find the pixel with the highest saliency
-        max_pixel = tf.argmax(tf.reshape(saliency_map, [-1]))
-        max_pixel_coords = tf.unravel_index(max_pixel, saliency_map.shape)
+    def forward_derivative(image_var):
+        with tf.GradientTape() as tape:
+            tape.watch(image_var)
+            outputs = model(image_var)
+        jacobian = tape.jacobian(outputs, image_var)[0, :, 0, :, :, 0]
+        return jacobian.numpy()
 
-        # Modify the pixel in the direction of the gradient
-        perturbation = tf.sign(target_grad[max_pixel_coords]) * eps
-        adversarial_image = tf.tensor_scatter_nd_add(adversarial_image, [max_pixel_coords], [perturbation])
+    adv_image = tf.identity(image_tf)  # Create a copy of the original image
+    adv_image_tf = tf.convert_to_tensor(adv_image, dtype=tf.float32)
 
-        # Clip the pixel values to be in the valid range [0, 1]
-        adversarial_image = tf.clip_by_value(adversarial_image, 0, 1)
+    for _ in range(max_iterations):
+        saliency = saliency_map(adv_image_tf, label_tf)
+        jacobian = forward_derivative(adv_image_tf)
 
-        # Check if the model misclassifies the image
-        prediction = tf.argmax(model(adversarial_image[None, ...]), axis=1).numpy()[0]
-        if prediction != label:
-            break
+        # Find the two pixels with the highest saliency
+        saliency_flat = saliency.flatten()
+        top_indices = np.argpartition(saliency_flat, -2)[-2:]
 
-    return adversarial_image.numpy()
+        # Calculate the forward derivative for the target class
+        jacobian_target = jacobian[label]
+        jacobian_target_flat = jacobian_target.flatten()
+
+        # Check if the Jacobian elements are positive
+        if jacobian_target_flat[top_indices[0]] > 0 and jacobian_target_flat[top_indices[1]] > 0:
+            # Perturb the pixels
+            adv_image_flat = adv_image.flatten()
+            adv_image_flat[top_indices[0]] += theta
+            adv_image_flat[top_indices[1]] += theta
+            adv_image = adv_image_flat.reshape(image.shape)
+            adv_image = np.clip(adv_image, 0, 1) #ensure image remains in valid range.
+            adv_image_tf = tf.convert_to_tensor(adv_image, dtype=tf.float32)
+
+            # Check if the target class is predicted
+            prediction = np.argmax(model.predict(adv_image), axis=1)[0]
+            if prediction == label:
+                return adv_image
+
+        else:
+            return image #attack failed.
+
+    return adv_image #return best adversarial image found.
 
 ################################################################################
-def DeepFool(image, label, model, max_iter=50, eps=1e-6):
+# Future Work: Implement the DeepFool attack
+################################################################################
+def DeepFool(image, num_classes, model, max_iterations=50, overshoot=0.02):
     """
-    Generate adversarial image using the DeepFool attack method.
+    DeepFool adversarial attack.
     This method iteratively perturbs the input image in the direction of the
     nearest decision boundary of the model. The perturbation is added to the
     original image to create an adversarial example. The DeepFool attack is
@@ -327,56 +434,68 @@ def DeepFool(image, label, model, max_iter=50, eps=1e-6):
     calculating the perturbation needed to cross the decision boundary and
     updating the adversarial image accordingly. The process continues until
     the model misclassifies the image or a maximum number of iterations is reached.
-    
+
     Args:
-        image (numpy.ndarray): The input image.
-        label (numpy.ndarray): The true label of the image.
-        model (tf.keras.Model): The model used for generating adversarial examples.
-        eps (float): The maximum perturbation allowed.
-    
+        image: Input image (NumPy array, shape (1, height, width, channels)).
+        num_classes: Number of classes in the model.
+        model: A TensorFlow Keras model.
+        max_iterations: Maximum number of iterations.
+        overshoot: Overshoot parameter.
+
     Returns:
-        numpy.ndarray: The adversarial image.
+        Adversarial image (NumPy array).
     """
 
-    # Ensure the image is a tensor
-    if not isinstance(image, tf.Tensor):
-        image = tf.convert_to_tensor(image, dtype=tf.float32)
+    image_tf = tf.convert_to_tensor(image, dtype=tf.float32)
 
-    # Get the original prediction
-    original_prediction = tf.argmax(model(image[None, ...]), axis=1).numpy()[0]
+    original_label = np.argmax(model.predict(image), axis=1)[0]
+    original_output = model(image_tf)[0]
 
-    # Initialize variables
-    adversarial_image = tf.identity(image)
-    perturbation = tf.zeros_like(image)
-    iteration = 0
+    adversarial_image = tf.identity(image_tf)
+    adversarial_image_tf = tf.convert_to_tensor(adversarial_image, dtype=tf.float32)
 
-    while original_prediction == label and iteration < max_iter:
+    i = 0
+    current_label = original_label
+
+    while current_label == original_label and i < max_iterations:
         with tf.GradientTape() as tape:
-            tape.watch(adversarial_image)
-            logits = model(adversarial_image[None, ...])
-            loss = logits[0, label]
+            tape.watch(adversarial_image_tf)
+            outputs = model(adversarial_image_tf)[0]
 
-        # Compute gradients of the loss with respect to the image
-        gradients = tape.gradient(loss, adversarial_image)
+        gradients = tape.gradient(outputs, adversarial_image_tf)
 
-        # Compute the perturbation
-        w = gradients
-        f = logits[0, label]
-        perturbation_step = tf.abs(f) / (tf.norm(w) + eps) * tf.sign(w)
+        # Compute the adversarial perturbation
+        w = np.inf
+        best_l = None
+        for k in range(num_classes):
+            if k == current_label:
+                continue
+            wk = gradients[0] - gradients[0] #initialize wk to zero.
+            fk = outputs[k] - outputs[current_label]
 
-        # Update the adversarial image
-        perturbation += perturbation_step
-        adversarial_image = tf.clip_by_value(image + perturbation, 0, 1)
+            wk = gradients[0] - tf.gather(gradients[0], k, axis =0) #gradients[0] is the gradient for the current label.
+            fk = outputs[k] - outputs[current_label]
 
-        # Update the prediction
-        original_prediction = tf.argmax(model(adversarial_image[None, ...]), axis=1).numpy()[0]
-        iteration += 1
+            wk_norm = tf.norm(tf.reshape(wk, [-1]))
+            if wk_norm == 0:
+              wk_norm = 1e-8 #prevent division by zero.
+            lk = abs(fk) / wk_norm
+            if lk < w:
+                w = lk
+                best_l = wk
 
-    return adversarial_image.numpy()
-    
+        r_i = (w + overshoot) * best_l / tf.norm(tf.reshape(best_l, [-1]))
+        adversarial_image = adversarial_image + r_i.numpy()
+        adversarial_image = np.clip(adversarial_image, 0, 1) #ensure image remains in the valid range.
+        adversarial_image_tf = tf.convert_to_tensor(adversarial_image, dtype=tf.float32)
+
+        current_label = np.argmax(model.predict(adversarial_image), axis=1)[0]
+        i += 1
+
+    return adversarial_image
 
 ################################################################################
-def visualize_adversarial_examples(original_image, adversarial_image, labels, model):
+def visualize_adversarial_examples(original_image, adversarial_image, labels, model, description):
     """
     Visualize the original and adversarial images along with their predictions.
     This function uses Matplotlib to create a side-by-side comparison of the original
@@ -385,7 +504,7 @@ def visualize_adversarial_examples(original_image, adversarial_image, labels, mo
     Args:
         original_image (numpy.ndarray): The original image.
         adversarial_image (numpy.ndarray): The adversarial image.
-        label (numpy.ndarray): The true label of the image.
+        labels (callable): A function to decode model predictions into human-readable labels.
         model (tf.keras.Model): The model used for generating predictions.
     """
 
@@ -395,45 +514,37 @@ def visualize_adversarial_examples(original_image, adversarial_image, labels, mo
     if not isinstance(adversarial_image, np.ndarray):
         adversarial_image = adversarial_image.numpy()
 
-    
-    # Convert the label to a NumPy array if it is not already
-    print("Image shape:", original_image.shape)
-    print("FGSM image shape:", adversarial_image.shape)
-
-
     # Get the predicted labels for both images
-    #original_prediction = model.predict(np.expand_dims(original_image, axis=0))
     original_prediction = model.predict(original_image)
-    #adversarial_prediction = model.predict(np.expand_dims(adversarial_image, axis=0))
     adversarial_prediction = model.predict(adversarial_image)
 
-    # Convert predictions to class labels
-    #original_label = np.argmax(original_prediction)
+    # Decode predictions into human-readable labels
     original_label = labels(original_prediction, top=1)[0][0]
-    #adversarial_label = np.argmax(adversarial_prediction)
     adversarial_label = labels(adversarial_prediction, top=1)[0][0]
 
-    debug_output(original_image, original_label)
-    debug_output(adversarial_image, adversarial_label)
+    # Normalize images to [0, 1] range for display
+    original_image = (original_image * 0.5) + 0.5  # Convert from [-1, 1] to [0, 1]
+    adversarial_image = (adversarial_image * 0.5) + 0.5  # Convert from [-1, 1] to [0, 1]
 
-    print(f'Original Label: {original_label}')
-    print(f'Adversarial Label: {adversarial_label}')
+    if DEBUG == True:
+        print("Original image shape:", original_image.shape)
+        #print("Original Prediction:", original_prediction)
+        print(f'Original Label: {original_label}')
+        print("Adversarial image shape:", adversarial_image.shape)
+        #print("Adversarial Prediction:", adversarial_prediction)
+        print(f'Adversarial Label: {adversarial_label}')
 
     # Create a figure to display the images
     fig, axes = plt.subplots(1, 2, figsize=(10, 5))
 
     # Display the original image
-    #axes[0].imshow(original_image.squeeze(), cmap='gray')
-    axes[0].imshow(original_image.squeeze())
-    #axes[0].set_title(f'Original Image\nTrue Label: {label}\nPredicted: {original_label}')
-    axes[0].set_title('Original Image\nTrue Label: {} : {:.2f}% Confidence'.format(original_label[1], original_label[2]*100))
+    axes[0].imshow(original_image.squeeze())  # No need for additional normalization
+    axes[0].set_title(f'Original Image\nLabel: {original_label[1]} ({original_label[2]*100:.2f}%)')
     axes[0].axis('off')
 
     # Display the adversarial image
-    #axes[1].imshow(adversarial_image.squeeze(), cmap='gray')
-    axes[1].imshow(adversarial_image.squeeze())
-    #axes[1].set_title(f'Adversarial Image\nTrue Label: {label}\nPredicted: {adversarial_label}')
-    axes[1].set_title('Adversarial Image\nTrue Label: {} : {:.2f}% Confidence'.format(adversarial_label[1], adversarial_label[2]*100))
+    axes[1].imshow(adversarial_image.squeeze())  # No need for additional normalization
+    axes[1].set_title(f'{description} Adversarial Image\nLabel: {adversarial_label[1]} ({adversarial_label[2]*100:.2f}%)')
     axes[1].axis('off')
 
     # Show the plot
@@ -484,6 +595,11 @@ def display_dtype_in_tuple(arg):
         None
     """
 
+    print("============================================")
+    print("=== display_dtype_in_tuple function call ===")
+    print("============================================")   
+   
+
     # Display the type and dtype of each element in the tuple
     for i, element in enumerate(arg):
         print(f"Element {i}: Type = {type(element)}", end="")
@@ -492,82 +608,73 @@ def display_dtype_in_tuple(arg):
         else:
             print(", No dtype attribute")
     print(f"Tuple: {type(arg)}")
-    print("\n")
+    # print("\n")
 
 ################################################################################
-def debug_output(image, label):
+def debug_image_output(image):
     """
     Debugging function to visualize the output of the adversarial attacks.
     This function is designed to be called in a Jupyter notebook or similar
     environment where interactive plotting is supported.
 
     Args:
-        image (numpy.ndarray): The input image.
-        label (numpy.ndarray): The true label of the image.
+        image: The input image.
 
     Returns:
         None
     """
 
-    print(f"Image: {type(image)}")
-    print(image.shape if hasattr(image, 'shape') else "No shape attribute")
-    print(image.dtype if hasattr(image, 'dtype') else "No dtype attribute")
-    display_dtype_in_tuple(image)
+    print("\n========================================")
+    print("=== debug_image_output function call ===")
+    print("========================================")   
 
+    # Display the type and dtype of the image
+    print("\nImage type and dtypes:")
+    if isinstance(image, tuple):
+        display_dtype_in_tuple(image)
+    else:
+        print("Image type:", type(image)) # Print the type of the image
+        print("Image dtypes:", image.dtype if hasattr(image, 'dtype') else "No dtype attribute") # Print the dtype of the image
 
-    print(f"Label: {type(label)}")
-    print(label.shape if hasattr(label, 'shape') else "No shape attribute")
-    print(label)
-    #display_dtype_in_tuple(label)
-    
-################################################################################
-# def main():
-#     # Load your model and data here
-#     model = tf.keras.applications.MobileNetV2(weights='imagenet',
-#                                           include_top=True) # Load the model with ImageNet weights
-#     model.trainable = False # Freeze the model
-
-#     # ImageNet labels
-#     label = tf.keras.applications.mobilenet_v2.decode_predictions
-
-#     image = get_image()  # Load your image
-#     # image_probs = model.predict(image) # returns a probability vector for the likelyhood of each class
-    
-#     # loss_object = tf.keras.losses.CategoricalCrossentropy() # Loss function to be used for the adversarial attack
-
-#     # labrador_retriever_index = 208 # Index of the label in the ImageNet dataset
-#     # label = tf.one_hot(labrador_retriever_index, image_probs.shape[-1]) # One-hot encoding of the label
-#     # label = tf.reshape(label, (1, image_probs.shape[-1])) # Reshape the label to match the input shape of the model
-
-#     # perturbations = create_adversarial_pattern(image, label) # Create the perturbations using the adversarial pattern function
-#     # plt.imshow(perturbations[0] * 0.5 + 0.5);  # To change [-1, 1] to [0,1]
-
-#     # Generate adversarial images
-#     fgsm_image = FGSM(image, label, model)
-#     pgd_image = PGD(image, label, model)
-#     cw_image = CW(image, label, model)
-#     jsma_image = JSMA(image, label, model)
-#     deepfool_image = DeepFool(image, label, model)
-
-#     # Visualize the adverarial examples
-#     visualize_adversarial_examples(image, fgsm_image, label, model)
-#     visualize_adversarial_examples(image, pgd_image, label, model)
-#     visualize_adversarial_examples(image, cw_image, label, model)
-#     visualize_adversarial_examples(image, jsma_image, label, model)
-#     visualize_adversarial_examples(image, deepfool_image, label, model)
-
-#     # Save the original image
-#     save_adversarial_images(image, image, label, 'output/original')
-
-#     # Save the adversarial images
-#     save_adversarial_images(image, fgsm_image, label, 'output/fgsm')
-#     save_adversarial_images(image, pgd_image, label, 'output/pgd')
-#     save_adversarial_images(image, cw_image, label, 'output/cw')
-#     save_adversarial_images(image, jsma_image, label, 'output/jsma')
-#     save_adversarial_images(image, deepfool_image, label, 'output/deepfool')
-    
-
-# if __name__ == '__main__':
-#     main()
+    print("\nOther Image Information:")
+    print("Image shape:", image.shape if hasattr(image, 'shape') else "No shape attribute") # Print the shape of the image
+    print("Image pixel values:", image.numpy().flatten()[:10]) # print first 10 pixel values
 
 ################################################################################
+def debug_label_output(label):
+    """
+    Debugging function to visualize the output of the adversarial attacks.
+    This function is designed to be called in a Jupyter notebook or similar
+    environment where interactive plotting is supported.
+
+    Args:
+        label: The label of the image.
+
+    Returns:
+        None
+    """
+
+    print("\n========================================")
+    print("=== debug_label_output function call ===")
+    print("========================================")   
+
+    # Display the type and dtype of the label
+    print("\nLabel type and dtypes:")
+    if isinstance(label, tuple):
+        display_dtype_in_tuple(label)
+    else:
+        print("Label type:", type(label)) # Print the type of the label
+        print("Label dtypes:", label.dtype if hasattr(label, 'dtype') else "No dtype attribute")
+
+    print("\nOther Label Information:")
+    print("Label shape:", label.shape if hasattr(label, 'shape') else "No shape attribute") # Print the shape of the label
+    print("Label:", label) # Print the label
+    if isinstance(label, tuple):
+        if len(label) == 3:
+            print("Label ID:", label[0]) # Print the label ID
+            print("Label name:", label[1]) # Print the label name
+            print("Label probability:", label[2]) # Print the label probability
+        else:
+            print("Label probability:", label[0]) # Print the label probability
+    else:
+        print("Label ID:", label[0])
