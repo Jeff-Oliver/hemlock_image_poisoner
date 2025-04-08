@@ -14,7 +14,7 @@ import numpy as np
 import io
 import tensorflow_hub as hub
 
-# ################################################################################
+#####################################################################
 # # Helper function to preprocess the image so that it can be inputted in MobileNetV2
 # def preprocess(image):
 #   image = tf.cast(image, tf.float32)
@@ -23,14 +23,13 @@ import tensorflow_hub as hub
 #   image = image[None, ...]
 #   return image
 
-# ################################################################################
+######################################################################
 # # Helper function to extract labels from probability vector
 # def get_imagenet_label(probs):
 #   return decode_predictions(probs, top=1)[0][0]
 
-################################################################################
+######################################################################
 # Helper function to remove the background from an image tensor
-# 
 def remove_background(image, background_color=(255, 255, 255)):
     """
     Removes the background from a TensorFlow image tensor, crops to a square bounding box,
@@ -82,7 +81,7 @@ def remove_background(image, background_color=(255, 255, 255)):
     image = tf.convert_to_tensor(np.array(combined_image), dtype=tf.uint8)
 
     return image
-################################################################################
+#####################################################################
 # Helper function to identify the image subject and crop to a square bounding box
 # Load a pre-trained object detection model from TensorFlow Hub
 def detect_and_crop(image):
@@ -140,7 +139,7 @@ def detect_and_crop(image):
 
     return cropped_image
 
-################################################################################
+######################################################################
 # Helper function to crop the image to a square
 def crop_to_square(image):
     """
@@ -171,7 +170,7 @@ def crop_to_square(image):
 
     return cropped_image
 
-################################################################################
+######################################################################
 # Helper function to add white space to the image that makes it square
 def expand_to_square(image, background_color=(255, 255, 255)):
     """
