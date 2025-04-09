@@ -108,7 +108,10 @@ streamlit --version
 ## Powerpoint Presentation
  **Powerpoint Presentation**: Available on [Google Slides](https://docs.google.com/presentation/d/1bXuiae8r6g7LAxt3JwkmMEAAOndjQzjU-EggEg0uJOE/edit?usp=sharing")
 
- ## Conclusion
+ ## Conclusion & Next Steps
+
+ In order to maintain a reasonable scope for this project we had to keep our initial work very brief. For this initial phase we worked on cleaning up the model & trying out various adversial attack methods. For our next steps if we ever continue this project we will take some time on developing a robust Streamlit interface. 
+ 
  
 ## Acknowledgments
 This project utilizes the following Model & Datasets
