@@ -84,19 +84,10 @@ Below is an example of the expected Streamlit UI when a user searches for songs:
 │── utils.py                           # Utility functions for EDA & preprocessing
 
 │── presentation                       # Powerpoint presentation ()pdf format for project showcase
+```
+
 
 ## Troubleshooting
-
-Gradio App Won't Start
-
-- Solution: Ensure the Streamlit dependency has been correctly installed and verify its installation. Try running:
-
-```bash
-pip install streamlit
-```
-```bash
-streamlit --version
-```
 
 **Missing File Errors**
 
@@ -107,7 +98,7 @@ streamlit --version
 
  ## Conclusion & Next Steps
 
- In order to maintain a reasonable scope for this project we had to keep our initial work very brief. For this initial phase we worked on cleaning up the model & trying out various adversial attack methods. For our next steps if we ever continue this project we will take some time on developing a robust Streamlit interface. 
+ In order to maintain a reasonable scope for this project we had to keep our initial work very brief. For this initial phase we worked on cleaning up the model & trying out various adversial attack methods. For our next steps if we ever continue this project we will take some time on developing a robust Streamlit interface. A lot of our code is commented out within our code. 
  
  
 ## Acknowledgments
