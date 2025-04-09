@@ -24,7 +24,7 @@ These are the attack methods that our Model currently supports:
 
 3. Carlini & Wagner Approach: Minimizes perturbations while still causing misclassification, often seen as one of the most effective attacks against deep networks.
 
-## Installation (Dennis)
+## Installation & How to run the Main File (Dennis)
 
 In order to get our mdoel to work please complete the following steps: 
 ### **1. Clone the Repository**
@@ -58,13 +58,6 @@ streamlit --version
 
 #!pip install tensorflow-hub
 
-## Program Usage Guide (Dennis)
-1. **Run `main.ipynb` first** to ensure all necessary data is processed correctly before using the recommendation system.
-2. **Launch the Streamlit Web App**.
-3. **Use the sidebar sliders** to set song characteristics (e.g., danceability, energy, tempo) depending on your preference.
-4. Click **"Find My Song"** to get songs recommendation.
-5. The system will return **up to 10 similar songs** based on the selected algorithm.
-   
 
 ## File Structure
 ```
@@ -99,7 +92,7 @@ Solution:
 
  ## Conclusion & Next Steps 
 
-For Phase 2 we will do the following: Add more loss functions, experiment with other image attack methods, calculate a true Attack Success Rate, and create a robust UI which allows users to select their attack methods etc. We will also scale out our model so it can work on Video and Audio media. Since we had to de-scope this project a lot of our future state work has been commented out. 
+For Phase 2 we will do the following: Add more loss functions, experiment with other image attack methods, calculate a true Attack Success Rate, and create a robust User Interface which allows users to select their attack methods etc. We will also scale out our model so it can work on Video and Audio media. Since we had to de-scope this project a lot of our future state work has been commented out. 
  
  
 ## Acknowledgments
