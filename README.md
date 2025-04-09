@@ -70,23 +70,21 @@ Below is an example of the expected Streamlit UI when a user searches for songs:
 
 ## File Structure
 ```
-               Hemlock_Image_Poisoner
-│── data                  # CSV dataset of the songs used in the ML model 
+                       Hemlock_Image_Poisoner
 
-│── output                # Contains pre-trained ML models & processed datasets
+│── images                             # images used to train model
 
-│── interface.py          # Streamlit UI & Recommendation Logic
+│── gitignore                          # Contains pre-trained ML models & processed datasets
 
-│── main.ipynb            # Jupyter Notebook for data exploration & modeling (MUST be run first)
+│── README.md                          # Project Documentation (This File)
 
-│── README.md             # Project Documentation (This File)
+│── adversarial_attacks.py             # Adversarial Attack Functions
 
-│── utils.py              # Utility functions for EDA & preprocessing
+│── main.ipynb                         # Jupyter Notebook for data exploration & modeling (MUST be run first)
 
-│── Project2 v3 Demo.mp4  # Video demonstration of the project
+│── utils.py                           # Utility functions for EDA & preprocessing
 
-│── Presentation.pdf      # Powerpoint presentation ()pdf format for project showcase
-```
+│── presentation                       # Powerpoint presentation ()pdf format for project showcase
 
 ## Troubleshooting
 
