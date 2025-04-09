@@ -9,12 +9,14 @@
 - Dennis Kipng'eno Bett
 
 ## Overview
-In this project, our team developed Hemlock: A Poison Image Creator and Detector. Hemlock is an advanced system designed to apply and identify adversarial perturbations using the Fast Gradient Sign Method (FGSM). We implemented an intuitive user interface that enables users to automatically generate poisoned images, thereby embedding protective signals into their visual content. In the current digital age, social media users face increasing threats of content theft and unauthorized use of their media in machine learning models. This tool offers an additional security layer by enabling content creators—particularly influencers and digital artists—to embed adversarial noise as a form of copyright protection. Our model serves as a proactive defense against content scraping, bot-generated impersonation, and deepfake misuse, while also supporting digital content ownership and traceability across platforms.
+In this project, our team is developing Hemlock. Hemlock is an advanced system designed to apply various attack methods to pertubate images. This will allow for a proactive defense against content scraping, bot-generated impersonation, and deepfake misuse, while also supporting digital content ownership and traceability across platforms. In this project we have succesfully completed Phase 1. In this initial phase we have succesfully used MobileNetV2 Image Classification and applied our attack methods to the images so that the model missclassifies them. 
 
-## MobileNetV2 Model 
-MobileNetV2 is an existing deep learning CNN model for image classification. 
+## MobileNetV2 Model (Dennis)
+To achieve this we used MobileNetV2 which is an existing deep learning CNN model for image classification. This model derives its images from image net.
 
 ## Advesirial Attack Methods
+
+These are the attack methods that our Model currently supports:
 
 1. Fast Gradient Sign Method: Perturbs input data by moving it slightly in the direction of the gradient sign to maximize model error.
 
@@ -23,6 +25,8 @@ MobileNetV2 is an existing deep learning CNN model for image classification.
 3. Carlini & Wagner Approach: Minimizes perturbations while still causing misclassification, often seen as one of the most effective attacks against deep networks.
 
 ## Installation (Dennis)
+
+In order to get our mdoel to work please complete the following steps: 
 ### **1. Clone the Repository**
 ```bash
 git clone (https://github.com/Jeff-Oliver/hemlock_image_poisoner.git
@@ -60,11 +64,7 @@ streamlit --version
 3. **Use the sidebar sliders** to set song characteristics (e.g., danceability, energy, tempo) depending on your preference.
 4. Click **"Find My Song"** to get songs recommendation.
 5. The system will return **up to 10 similar songs** based on the selected algorithm.
-
-## Example Output (Dennis)
-Below is an example of the expected Streamlit UI when a user searches for songs:
-
-**Screeshot**
+   
 
 ## File Structure
 ```
@@ -82,22 +82,24 @@ Below is an example of the expected Streamlit UI when a user searches for songs:
 
 │── utils.py                           # Utility functions for EDA & preprocessing
 
-│── presentation                       # Powerpoint presentation ()pdf format for project showcase
+│── presentation                       # Powerpoint presentation ()pdf format for project showcase. Also includes demo video. 
 ```
 
 
 ## Troubleshooting (Dennis)
 
-**Missing File Errors**
+Solution: 
 
-- Solution: Make sure you have run `main.ipynb` before launching `interface.py`. This generates all the necessary datasets required to run the program.
+(1) Make sure you have run `main.ipynb` 
+
+(2) Ensure your packages are succesfully installed (above). 
 
 ## Powerpoint Presentation
  **Powerpoint Presentation**: Available on [Google Slides](https://docs.google.com/presentation/d/1bXuiae8r6g7LAxt3JwkmMEAAOndjQzjU-EggEg0uJOE/edit?usp=sharing")
 
- ## Conclusion & Next Steps (Can u review dennis)
+ ## Conclusion & Next Steps 
 
- In order to maintain a reasonable scope for this project we had to keep our initial work very brief. For this initial phase we worked on cleaning up the model & trying out various adversial attack methods. For our next steps if we ever continue this project we will take some time on developing a robust Streamlit interface. A lot of our code is commented out within our code. 
+For Phase 2 we will do the following: Add more loss functions, experiment with other image attack methods, calculate a true Attack Success Rate, and create a robust UI which allows users to select their attack methods etc. We will also scale out our model so it can work on Video and Audio media. Since we had to de-scope this project a lot of our future state work has been commented out. 
  
  
 ## Acknowledgments
