@@ -79,10 +79,9 @@ streamlit --version
 ```
 
 
-## Troubleshooting (Dennis)
+## Troubleshooting
 
 Solution: 
-
 (1) Make sure you have run `main.ipynb` 
 
 (2) Ensure your packages are succesfully installed (above). 
