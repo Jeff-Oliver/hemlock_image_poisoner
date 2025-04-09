@@ -107,6 +107,8 @@ streamlit --version
 
 ## Powerpoint Presentation
  **Powerpoint Presentation**: Available on [Google Slides](https://docs.google.com/presentation/d/1bXuiae8r6g7LAxt3JwkmMEAAOndjQzjU-EggEg0uJOE/edit?usp=sharing")
+
+ ## Conclusion
  
 ## Acknowledgments
 This project utilizes the following Model & Datasets
