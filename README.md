@@ -45,7 +45,6 @@ Run the following command to check if Streamlit is installed correctly:
 ```bash
 streamlit --version
 ```
-If everything is set up correctly, you should see the installed version of Gradio.
 
 **Packages:**
 
