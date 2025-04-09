@@ -94,6 +94,9 @@ def detect_and_crop(image):
     Returns:
         PIL.Image: Cropped image around the largest detected object with a square bounding box.
     """
+    # Load a pre-trained SSD model from TensorFlow Hub for object detection
+    detector = hub.load("https://tfhub.dev/tensorflow/ssd_mobilenet_v2/2")
+    
     # Convert TensorFlow tensor to NumPy array
     image_np = image.numpy()
 
