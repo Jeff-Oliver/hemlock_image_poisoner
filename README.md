@@ -47,7 +47,6 @@ streamlit --version
 ```
 If everything is set up correctly, you should see the installed version of Gradio.
 
-
 **Packages:**
 
 #!pip install rembg
