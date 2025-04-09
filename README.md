@@ -22,7 +22,7 @@ MobileNetV2 is an existing deep learning CNN model for image classification.
 
 3. Carlini & Wagner Approach: Minimizes perturbations while still causing misclassification, often seen as one of the most effective attacks against deep networks.
 
-## Installation
+## Installation (Dennis)
 ### **1. Clone the Repository**
 ```bash
 git clone (https://github.com/Jeff-Oliver/hemlock_image_poisoner.git
@@ -54,14 +54,14 @@ streamlit --version
 
 #!pip install tensorflow-hub
 
-## Program Usage Guide
+## Program Usage Guide (Dennis)
 1. **Run `main.ipynb` first** to ensure all necessary data is processed correctly before using the recommendation system.
 2. **Launch the Streamlit Web App**.
 3. **Use the sidebar sliders** to set song characteristics (e.g., danceability, energy, tempo) depending on your preference.
 4. Click **"Find My Song"** to get songs recommendation.
 5. The system will return **up to 10 similar songs** based on the selected algorithm.
 
-## Example Output
+## Example Output (Dennis)
 Below is an example of the expected Streamlit UI when a user searches for songs:
 
 **Screeshot**
@@ -86,7 +86,7 @@ Below is an example of the expected Streamlit UI when a user searches for songs:
 ```
 
 
-## Troubleshooting
+## Troubleshooting (Dennis)
 
 **Missing File Errors**
 
