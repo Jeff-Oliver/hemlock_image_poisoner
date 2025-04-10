@@ -40,9 +40,6 @@ pip install tensorflow tensorflow_hub matplotlib pathlib numpy pandas PIL rembg 
 ```
 
 ### **3. Run the main.ipynb file**
-```bash
-streamlit run interface.py
-```
 
 ## File Structure
 ```
