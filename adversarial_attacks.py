@@ -539,11 +539,13 @@ def visualize_adversarial_examples(original_image, adversarial_image, labels, mo
 
     # Display the original image
     axes[0].imshow(original_image.squeeze())  # No need for additional normalization
+    #axes[0].imshow(original_image)  # No need for additional normalization
     axes[0].set_title(f'Original Image\nLabel: {original_label[1]} ({original_label[2]*100:.2f}%)')
     axes[0].axis('off')
 
     # Display the adversarial image
     axes[1].imshow(adversarial_image.squeeze())  # No need for additional normalization
+    #axes[1].imshow(adversarial_image)  # No need for additional normalization
     axes[1].set_title(f'{description} Adversarial Image\nLabel: {adversarial_label[1]} ({adversarial_label[2]*100:.2f}%)')
     axes[1].axis('off')
 
