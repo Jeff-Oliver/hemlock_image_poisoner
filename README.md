@@ -40,6 +40,7 @@ pip install tensorflow tensorflow_hub matplotlib pathlib numpy pandas PIL rembg 
 ```
 
 ### **3. Run the main.ipynb file**
+Within VS Code, select the **"main.ipynb"** file and execute each of the code cells within the notebook from top to bottom in order.
 
 ## File Structure
 ```
