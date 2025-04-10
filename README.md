@@ -62,12 +62,11 @@ pip install tensorflow tensorflow_hub matplotlib pathlib numpy pandas PIL rembg 
 
 
 ## Troubleshooting
+In case you come across any issues with the program, please: 
 
-Solution: 
+(1) Make sure you have run `main.ipynb` first
 
-(1) Make sure you have run `main.ipynb` 
-
-(2) Ensure your packages are succesfully installed (above). 
+(2) Ensure your packages are succesfully installed as demonstrated (above). 
 
 ## Powerpoint Presentation
  **Powerpoint Presentation**: Available on [Google Slides](https://docs.google.com/presentation/d/1bXuiae8r6g7LAxt3JwkmMEAAOndjQzjU-EggEg0uJOE/edit?usp=sharing")
