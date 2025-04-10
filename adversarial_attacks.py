@@ -680,3 +680,4 @@ def debug_label_output(label):
             print("Label confidence:", label[0]) # Print the label probability
     else:
         print("Label ID:", label[0])
+
