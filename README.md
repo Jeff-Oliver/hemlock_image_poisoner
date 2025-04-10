@@ -11,20 +11,20 @@
 ## Overview
 In this project, our team is developing Hemlock. Hemlock is an advanced system designed to apply various attack methods to pertubate images. This will allow for a proactive defense against content scraping, bot-generated impersonation, and deepfake misuse, while also supporting digital content ownership and traceability across platforms. In this project we have succesfully completed Phase 1. In this initial phase we have succesfully used MobileNetV2 Image Classification and applied our attack methods to the images so that the model missclassifies them. 
 
-## MobileNetV2 Model (Dennis)
-To achieve this we used MobileNetV2 which is an existing deep learning CNN model for image classification. This model derives its images from image net.
+## MobileNetV2 Model
+For this project, we used MobileNetV2, an existing deep learning convolutional neural network (CNN) model for Image classification, Object detection, and Semantic segmentation. This model derives its images from image net. We decided on this model due to its efficiency with limited computation, lightweight architecture, and ease to integrate into attack pipelines as the victim model.
 
-## Advesirial Attack Methods
+## Adversarial Attack Methods
 
 These are the attack methods that our Model currently supports:
 
-1. Fast Gradient Sign Method: Perturbs input data by moving it slightly in the direction of the gradient sign to maximize model error.
+1. Fast Gradient Sign Method: Perturbs input data by moving it slightly in the direction of the gradient sign to maximize model error. This attack method is convenient for evaluating vulnerability of the model.
 
-2. Projected Gradient Descent Method: Applies small FGSM steps repeatedly and projects the adversarial example back into a valid range after each step.
+2. Projected Gradient Descent Method: Applies small FGSM steps repeatedly and projects the adversarial example back into a valid range after each step. This attack method helps simulate worst-case attacks under a fixed perturbation budget.
 
-3. Carlini & Wagner Approach: Minimizes perturbations while still causing misclassification, often seen as one of the most effective attacks against deep networks.
+3. Carlini & Wagner Approach: Minimizes perturbations while still causing misclassification, often seen as one of the most effective attacks against deep networks. This is especially due to its stealthness with the atttacks being very hard to detect.
 
-## Installation & How to run the Main File (Dennis)
+## Installing and running the program
 
 In order to get our mdoel to work please complete the following steps: 
 ### **1. Clone the Repository**
@@ -36,28 +36,13 @@ cd hemlock_image_poisoner
 
 ### **2. Install Dependencies**
 ```bash
-pip install numpy pandas matplotlib seaborn scipy scikit-learn statsmodels streamlit joblib
+pip install tensorflow tensorflow_hub matplotlib pathlib numpy pandas PIL rembg io onnxruntime scikit-image
 ```
 
-### **3. Run the Streamlit App**
+### **3. Run the main.ipynb file**
 ```bash
 streamlit run interface.py
 ```
-
-### **4. Verify Installation**
-Run the following command to check if Streamlit is installed correctly:
-```bash
-streamlit --version
-```
-
-**Packages:**
-
-#!pip install rembg
-
-#!pip install onnxruntime
-
-#!pip install tensorflow-hub
-
 
 ## File Structure
 ```
