@@ -58,9 +58,8 @@ Within VS Code, select the **"main.ipynb"** file and execute each of the code ce
 
 │── utils.py                           # Utility functions for EDA & preprocessing
 
-│── presentation                       # Powerpoint presentation ()pdf format for project showcase. Also includes demo video. 
+│── Team_5_Project_3_Presentation.pdf  # Powerpoint presentation ()pdf format for project showcase. Also includes demo video. 
 ```
-
 
 ## Troubleshooting
 In case you come across any issues with the program, please: 
@@ -69,8 +68,8 @@ In case you come across any issues with the program, please:
 
 (2) Ensure your packages are succesfully installed as demonstrated (above). 
 
-## Powerpoint Presentation
- **Powerpoint Presentation**: Available on [Google Slides](https://docs.google.com/presentation/d/1bXuiae8r6g7LAxt3JwkmMEAAOndjQzjU-EggEg0uJOE/edit?usp=sharing")
+## Presentation
+ **Presentation**: Available on [Google Slides](https://docs.google.com/presentation/d/1bXuiae8r6g7LAxt3JwkmMEAAOndjQzjU-EggEg0uJOE/edit?usp=sharing")
 
  ## Conclusion & Next Steps 
 
@@ -83,6 +82,8 @@ This project utilizes the following Model & Datasets
 2. **Model Documentation**: Available on [Keras]( https://keras.io/api/applications/#usage-examples-for-image-classification-models)
 3. **Tutorial Consulted**:  Available on [Tensorflow](https://www.tensorflow.org/tutorials/generative/adversarial_fgsm)
 4. **Co-Lab Documentation Consulted**:  Available on [Co-Lab](https://colab.research.google.com/drive/1bOzVaDQo8h6Ngstb7AcfzC35OihpHspt)
+5. **Hugging Face Model** Available on [Hugging Face](https://huggingface.co/google/mobilenet_v2_1.0_224)
+6. **Image NetV2** Available on [GitHub](https://github.com/modestyachts/ImageNetV2)
   
 ## Contribution Guideline
 Contributions are welcome and appreciated! Please follow these steps:
